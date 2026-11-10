@@ -18,6 +18,8 @@ if (typeof document === "undefined") {
     },
   };
 }
+// ------------------------------------------------------------------------------
+
 //1.- Declara una función getRandomPokemon que retorne un pokemon aleatorio.
 // API: https://pokeapi.co/ -> GET https://pokeapi.co/api/v2/pokemon/{id}
 
@@ -40,18 +42,14 @@ async function getRandomPokemon() {
 
     data = await response.json();
 
-    console.log("1. Pokemon:", data);
-
     return data;
   } catch (error) {
     console.error(
-      "No se pudo obtener una imagen de pokemon aleatoria:",
+      "No se pudo obtener un pokemon aleatorio:",
       error.message,
     );
   }
 }
-
-getRandomPokemon();
 
 //2.- Declara una funcion getImageAndName que retorne el nombre y la URL de la imagen de un pokemon => (return {img, name})
 
@@ -67,18 +65,14 @@ async function getImageAndName(pokemon) {
     let name = data.name;
     let img = data.sprites.front_default;
 
-    console.log("2. Pokemon:", name);
-    console.log("2. Pokemon:", img);
     return { name, img };
   } catch (error) {
     console.error(
-      "No se pudo obtener una imagen de pokemon aleatoria:",
+      "No se pudo obtener el pokemon:",
       error.message,
     );
   }
 }
-
-const pokemon = getImageAndName(2);
 
 //3.- Declara una funcion printImageAndName que retorne el string necesario para pintar la imagen y el nombre del pokemon en el DOM de la siguiente forma:
 /*
@@ -90,21 +84,7 @@ const pokemon = getImageAndName(2);
 
 async function printImageAndName(pokemon = 2) {
   try {
-    const response = await fetch(
-      `https://pokeapi.co/api/v2/pokemon/${pokemon}`,
-    );
-
-    if (!response.ok) {
-      throw new Error(`Error HTTP: ${response.status}`);
-    }
-
-    const data = await response.json();
-
-    console.log("3. Pokemon nombre:", data.name);
-    console.log("3. Pokemon imagen:", data.sprites.front_default);
-
-    const img = data.sprites.front_default;
-    const name = data.name;
+    const { img, name } = await getImageAndName(pokemon);
 
     return `<section>
             <img src="${img}" alt="${name}">
@@ -114,8 +94,6 @@ async function printImageAndName(pokemon = 2) {
     console.error("No se pudo obtener el Pokemon:", error.message);
   }
 }
-
-printImageAndName(2);
 
 //4.- Declara una función getRandomDogImage que retorne la url de la imagen de un perro aleatorio.
 // API de perritos: https://dog.ceo/dog-api/
@@ -130,61 +108,35 @@ async function getRandomDogImage() {
 
     const data = await response.json();
 
-    console.log("4. Perro:", data);
-
     return data.message;
   } catch (error) {
     console.error(
-      "No se pudo obtener una imagen de perro aleatoria:",
+      "No se pudo obtener una imagen de perro aleatorio:",
       error.message,
     );
   }
 }
-
-getRandomDogImage();
 
 //5.- Declara una función getRandomPokemonImage que retorne la url de la imagen de un pokemon aleatorio.
 
 async function getRandomPokemonImage() {
   try {
-    let response = await fetch(`https://pokeapi.co/api/v2/pokemon/?limit=2000`);
+    const data = await getRandomPokemon();
 
-    if (!response.ok) {
-      throw new Error(`Error HTTP: ${response.status}`);
-    }
-
-    let data = await response.json();
-    let random = data.results[Math.floor(Math.random() * data.results.length)];
-
-    response = await fetch(random.url);
-
-    if (!response.ok) {
-      throw new Error(`Error HTTP: ${response.status}`);
-    }
-
-    data = await response.json();
-
-    let img =
-      data.sprites.other["official-artwork"].front_default ||
-      data.sprites.front_default;
-
-    console.log("5. Pokemon:", img);
-    return img;
+    return data.sprites.other["official-artwork"].front_default || data.sprites.front_default;
   } catch (error) {
     console.error(
-      "No se pudo obtener una imagen de pokemon aleatoria:",
+      "No se pudo obtener una imagen de pokemon aleatorio:",
       error.message,
     );
   }
 }
 
-const pokemon2 = getRandomPokemonImage(2);
-
 //6.- Declara una función printPugVsPikachu que pinte la batalla entre "Pug" y "Pikachu" (no se testea)
 
 async function printPugVsPikachu() {
   try {
-    const response = await fetch("https://dog.ceo/api/breed/pug/images");
+    const response = await fetch("https://dog.ceo/api/breed/pug/images/random");
 
     if (!response.ok) {
       throw new Error(`Error HTTP: ${response.status}`);
@@ -196,7 +148,7 @@ async function printPugVsPikachu() {
 
     const DOM = `<section>
             <div>
-                <img src="${data.message[0]}" alt="Imagen perro">
+                <img src="${data.message}" alt="Imagen perro">
                 <h1>Pug</h1>
             </div>
             <p>VS</p>
@@ -210,7 +162,6 @@ async function printPugVsPikachu() {
       document.body.insertAdjacentHTML("beforeend", DOM);
     }
 
-    console.log("6. Batalla:", DOM);
     return DOM;
   } catch (error) {
     console.error(
@@ -219,8 +170,6 @@ async function printPugVsPikachu() {
     );
   }
 }
-
-printPugVsPikachu();
 
 //7.- Declara una función getRandomCharacter que retorne un personaje aleatorio.
 // API: https://rickandmortyapi.com/ -> GET https://rickandmortyapi.com/api/character/{id}
@@ -244,18 +193,14 @@ async function getRandomCharacter() {
 
     data = await response.json();
 
-    console.log("7. Personaje:", data);
-
     return data;
   } catch (error) {
     console.error(
-      "No se pudo obtener una imagen de personaje aleatoria:",
+      "No se pudo obtener un personaje aleatorio:",
       error.message,
     );
   }
 }
-
-getRandomCharacter();
 
 //8.- Declara una función getRandomCharacterInfo que retorne de un personaje su imagen, nombre, episodios en los que aparece y el nombre del primer episodio en el que aparece + fecha de estreno, tendrás que hacer otro fetch para llegar a los ultimos datos. Formato de retorno => (return {img, name, episodes, firstEpisode, dateEpisode})
 
@@ -264,10 +209,6 @@ async function getRandomCharacterInfo() {
     // Desestructuramos ya con las claves exactas que espera el test:
     // img, name, episodes.
     const { name, image: img, episode: episodes } = await getRandomCharacter();
-    console.log("8. Nombre:", name);
-    console.log("8. Imagen:", img);
-    console.log("8. Episodes:", episodes);
-    console.log("8. Primer episodio (url):", episodes[0]);
 
     // episodes[0] ya es la URL completa del episodio, no hay que montarla.
     const response = await fetch(episodes[0]);
@@ -279,8 +220,6 @@ async function getRandomCharacterInfo() {
     const data = await response.json();
     const firstEpisode = data.name;
     const dateEpisode = data.air_date;
-    console.log("8. Primer episodio:", firstEpisode);
-    console.log("8. Fecha estreno episodio:", dateEpisode);
 
     return { img, name, episodes, firstEpisode, dateEpisode };
   } catch (error) {
@@ -316,6 +255,6 @@ async function printCharacterInfo() {
   document.body.insertAdjacentHTML("beforeend", DOM);
 }
 
+// Llamadas que pintan en el DOM (ejercicios 6 y 9). El resto de funciones solo se definen;
+printPugVsPikachu();
 printCharacterInfo();
-
-
